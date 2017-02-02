@@ -1,0 +1,12 @@
+<div class="col-md-3 col-xs-4 text-right hidden-xs menu-2">
+    <ul>
+        <li class="search">
+            <form method="get" id="searchform" action="{{ path('product_list') }}">
+                <div class="input-group">
+                    {{ form_widget(form.name, {'type': 'text', 'attr': {'placeholder': 'Search..'}} ) }}
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="button"><i class="icon-search"></i></button>
+                    </span>
+                </div>
+            </form>
+        </li>

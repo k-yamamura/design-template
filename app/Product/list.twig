@@ -1,0 +1,119 @@
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'product_page' %}
+
+{% block javascript %}
+    <script>
+        // 並び順を変更
+        function fnChangeOrderBy(orderby) {
+            eccube.setValue('orderby', orderby);
+            eccube.setValue('pageno', 1);
+            eccube.submitForm();
+        }
+
+        // 表示件数を変更
+        function fnChangeDispNumber(dispNumber) {
+            eccube.setValue('disp_number', dispNumber);
+            eccube.setValue('pageno', 1);
+            eccube.submitForm();
+        }
+        // 商品表示BOXの高さを揃える
+        $(window).load(function() {
+            $('.product_item').matchHeight();
+        });
+    </script>
+{% endblock %}
+
+{% block main %}
+    <form name="form1" id="form1" method="get" action="?">
+        {{ form_widget(search_form) }}
+    </form>
+    <!-- ▼topicpath▼ -->
+    <div id="topicpath" class="row">
+        <ol id="list_header_menu">
+            <li><a href="{{ url('product_list') }}">全商品</a></li>
+            {% if Category is not null %}
+                {% for Path in Category.path %}
+                    <li><a href="{{ url('product_list') }}?category_id={{ Path.id }}">{{ Path.name }}</a></li>
+                {% endfor %}
+            {% endif %}
+            {% if search_form.vars.value.name %}
+            <li>「{{ search_form.vars.value.name }}」の検索結果</li>
+            {% endif %}
+        </ol>
+    </div>
+    <!-- ▲topicpath▲ -->
+    <div id="result_info_box" class="row">
+        <form name="page_navi_top" id="page_navi_top" action="?">
+            <p id="result_info_box__item_count" class="intro col-sm-6"><strong><span id="productscount">{{ pagination.totalItemCount }}</span>件</strong>の商品がみつかりました。
+            </p>
+
+            <div id="result_info_box__menu_box" class="col-sm-6 no-padding">
+                <ul id="result_info_box__menu" class="pagenumberarea clearfix">
+                    <li id="result_info_box__disp_menu">
+                        {{ form_widget(disp_number_form, {'id': '', 'attr': {'onchange': "javascript:fnChangeDispNumber(this.value);"}}) }}
+                    </li>
+                    <li id="result_info_box__order_menu">
+                        {{ form_widget(order_by_form, {'id': '', 'attr': {'onchange': "javascript:fnChangeOrderBy(this.value);"}}) }}
+                    </li>
+                </ul>
+            </div>
+
+        </form>
+    </div>
+
+    <header id="fh5co-header" class="fh5co-cover fh5co-cover-sm" role="banner" style="background-image:url({{ app.config.front_urlpath }}/assets/images/img_bg_2.jpg);">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2 text-center">
+                    <div class="display-t">
+                        <div class="display-tc animate-box" data-animate-effect="fadeIn">
+                            <h1>Product</h1>
+                            <h2>Free html5 templates Made by <a href="http://freehtml5.co" target="_blank">freehtml5.co</a></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ▼item_list▼ -->
+    <div id="fh5co-product">
+        <div class="container">
+            <div class="row animate-box">
+                <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+                    <span>Cool Stuff</span>
+                    <h2>Products.</h2>
+                    <p>Dignissimos asperiores vitae velit veniam totam fuga molestias accusamus alias autem provident. Odit ab aliquam dolor eius.</p>
+                </div>
+            </div>
+            <div class="row">
+
+                {% for Product in pagination %}
+                    <div class="col-md-4 text-center animate-box">
+                        <div class="product">
+                            <div class="product-grid" style="background-image:url({{ app.config.image_save_urlpath }}/{{ Product.main_list_image|no_image_product }});">
+                                <div class="inner">
+                                    <p>
+                                        <a href="{{ url('product_detail', {'id': Product.id}) }}" class="icon"><i class="icon-shopping-cart"></i></a>
+                                        <a href="{{ url('product_detail', {'id': Product.id}) }}" class="icon"><i class="icon-eye"></i></a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="desc">
+                                <h3><a href="{{ url('product_detail', {'id': Product.id}) }}">{{ Product.name }}</a></h3>
+                                <span class="price">{{ Product.price02IncTaxMin|price }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- ▲item_list▲ -->
+
+    {% if pagination.totalItemCount > 0 %}
+        {% include "pagination.twig" with { 'pages' : pagination.paginationData } %}
+    {% endif %}
+{% endblock %}
